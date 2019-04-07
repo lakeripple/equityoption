@@ -84,6 +84,8 @@ import org.jquantlib.time.Period;
 import org.jquantlib.time.TimeUnit;
 import org.jquantlib.time.calendars.Target;
 
+import com.wf.equityoption.util.OptionData;
+
 
 public class EquityOptionBlackScholes implements Runnable {
 
@@ -96,25 +98,32 @@ public class EquityOptionBlackScholes implements Runnable {
 
        QL.info("::::: " + this.getClass().getSimpleName() + " :::::");
       
+      
+
+       //Single OptionData for test
+       OptionData data = new OptionData("", 205.0, .17, new java.util.Date("04/12/2019"));
+       
+       execute(data);
+
+
+
+   }
+   
+   private void execute(OptionData data){
+	   final Option.Type type = Option.Type.Call;
+
+       final double underlying = 197.0;
+       /*@Rate*/final double riskFreeRate = 0.0256;
+       final double volatility = data.getVolatility();
+       final double dividendYield = 0.00;
        // set up dates
        final Calendar calendar = new Target();
-       final Date todaysDate = new Date(15, Month.May, 1998);
-       final Date settlementDate = new Date(17, Month.May, 1998);
+       final Date todaysDate = new Date(new java.util.Date("4/2/2019"));
        new Settings().setEvaluationDate(todaysDate);
 
-       // our options
-       final Option.Type type = Option.Type.Call;
-       final double strike = 40.0;
-       final double underlying = 36.0;
-       /*@Rate*/final double riskFreeRate = 0.06;
-       final double volatility = 0.2;
-       final double dividendYield = 0.00;
-
-
-       final Date maturity = new Date(17, Month.May, 1999);
+       final Date expiryDate = new Date(data.getExpiryDate());
        final DayCounter dayCounter = new Actual365Fixed();
-
-       // define line formatting
+	   // define line formatting
        //              "         1         2         3         4         5         6         7         8         9"
        //              "123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890"
        //              "                            Method      European      Bermudan      American";
@@ -130,14 +139,14 @@ public class EquityOptionBlackScholes implements Runnable {
        System.out.println("================================== ============= ============= =============");
 
        // Define exercise for European Options
-       final Exercise europeanExercise = new EuropeanExercise(maturity);
+       final Exercise europeanExercise = new EuropeanExercise(expiryDate);
 
        // bootstrap the yield/dividend/volatility curves
        final Handle<Quote> underlyingH = new Handle<Quote>(new SimpleQuote(underlying));
-       final Handle<YieldTermStructure> flatDividendTS = new Handle<YieldTermStructure>(new FlatForward(settlementDate, dividendYield, dayCounter));
-       final Handle<YieldTermStructure> flatTermStructure = new Handle<YieldTermStructure>(new FlatForward(settlementDate, riskFreeRate, dayCounter));
-       final Handle<BlackVolTermStructure> flatVolTS = new Handle<BlackVolTermStructure>(new BlackConstantVol(settlementDate, calendar, volatility, dayCounter));
-       final Payoff payoff = new PlainVanillaPayoff(type, strike);
+       final Handle<YieldTermStructure> flatDividendTS = new Handle<YieldTermStructure>(new FlatForward(todaysDate, dividendYield, dayCounter));
+       final Handle<YieldTermStructure> flatTermStructure = new Handle<YieldTermStructure>(new FlatForward(todaysDate, riskFreeRate, dayCounter));
+       final Handle<BlackVolTermStructure> flatVolTS = new Handle<BlackVolTermStructure>(new BlackConstantVol(todaysDate, calendar, volatility, dayCounter));
+       final Payoff payoff = new PlainVanillaPayoff(type, data.getStrike());
 
        final BlackScholesMertonProcess bsmProcess = new BlackScholesMertonProcess(underlyingH, flatDividendTS, flatTermStructure, flatVolTS);
 
@@ -147,7 +156,6 @@ public class EquityOptionBlackScholes implements Runnable {
        String method = "Black-Scholes";
        europeanOption.setPricingEngine(new AnalyticEuropeanEngine(bsmProcess));
        System.out.printf(fmt, method, europeanOption.NPV(), Double.NaN, Double.NaN );
-
    }
 
 }

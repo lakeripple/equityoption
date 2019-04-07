@@ -41,14 +41,14 @@ public class CSVDataReader {
 
 	private OptionData mapRecord(CSVRecord record) {
 		Date expiryDate = null;
-		double strike = new Double(record.get(1)).doubleValue();
-		double volatility = new Double(record.get(2)).doubleValue();
+		double strike = new Double(record.get(2)).doubleValue();
+		double volatility = new Double(record.get(10)).doubleValue();
 		if(volatility !=0.0)			
 			volatility = volatility/100;
 		
 		try{
 			SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-			expiryDate = sdf.parse(record.get(3));
+			expiryDate = sdf.parse(record.get(11));
 		}catch(ParseException pe){
 			pe.printStackTrace();
 		}
