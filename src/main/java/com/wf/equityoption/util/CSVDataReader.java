@@ -42,7 +42,8 @@ public class CSVDataReader {
 	private OptionData mapRecord(CSVRecord record) {
 		Date expiryDate = null;
 		double strike = new Double(record.get(2)).doubleValue();
-		double volatility = new Double(record.get(10)).doubleValue();
+		String strVol = record.get(10).substring(0,record.get(10).length()-1);		
+		double volatility = new Double(strVol).doubleValue();
 		if(volatility !=0.0)			
 			volatility = volatility/100;
 		
@@ -56,5 +57,14 @@ public class CSVDataReader {
 		OptionData data = new OptionData(record.get(0), strike, volatility, expiryDate);
 		return data;
 	}
-
+	
+	public static void main(String[] args) {
+		CSVDataReader reader = new CSVDataReader();
+		List<OptionData> optDataList = reader.parseFile();
+		
+		for(OptionData data: optDataList){
+			System.out.println(data.toString());
+		}
+		System.out.println("No of records : "+optDataList.size());
+	}
 }

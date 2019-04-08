@@ -40,6 +40,8 @@ FOR A PARTICULAR PURPOSE.  See the license for more details.
 */
 
 
+import java.util.List;
+
 import org.jquantlib.QL;
 import org.jquantlib.Settings;
 import org.jquantlib.daycounters.Actual365Fixed;
@@ -84,6 +86,7 @@ import org.jquantlib.time.Period;
 import org.jquantlib.time.TimeUnit;
 import org.jquantlib.time.calendars.Target;
 
+import com.wf.equityoption.util.CSVDataReader;
 import com.wf.equityoption.util.OptionData;
 
 
@@ -97,13 +100,15 @@ public class EquityOptionBlackScholes implements Runnable {
    public void run() {
 
        QL.info("::::: " + this.getClass().getSimpleName() + " :::::");
-      
-      
-
        //Single OptionData for test
-       OptionData data = new OptionData("", 205.0, .17, new java.util.Date("04/12/2019"));
+//       OptionData data = new OptionData("", 205.0, .17, new java.util.Date("04/12/2019"));
+//       execute(data);
        
-       execute(data);
+       CSVDataReader reader =  new CSVDataReader();
+       List<OptionData> optionDataList = reader.parseFile();
+       for(OptionData optData : optionDataList){
+    	   execute(optData);
+       }
 
 
 

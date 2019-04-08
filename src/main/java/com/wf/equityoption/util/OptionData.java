@@ -10,6 +10,20 @@ public class OptionData {
 	private double volatility;
 	private Date expiryDate;
 	
+	public OptionData(){
+		
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Contract Name : "+optionName + " -- ");
+		sb.append("Expiry Date : "+expiryDate + " -- ");
+		sb.append("Strike : "+strike + " -- ");
+		sb.append("volatility : "+volatility + " -- ");
+		return sb.toString();
+	}
+
 	public OptionData(String optionName,double strike, double voloatility, Date expiry ){
 		this.optionName = optionName;
 		this.strike = strike;
