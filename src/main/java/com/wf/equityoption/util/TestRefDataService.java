@@ -44,9 +44,9 @@ public class TestRefDataService {
 				System.out.println(jObj);
 			}
 		}catch(MalformedURLException e){
-			
+			e.printStackTrace();
 		}catch(IOException e){
-			
+			e.printStackTrace();
 		}
 	}
 
